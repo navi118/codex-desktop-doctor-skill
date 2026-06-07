@@ -1,11 +1,11 @@
 ---
 name: codex-desktop-doctor
-description: Diagnose Codex Desktop Chrome and Computer Use failures on Windows, especially after Codex updates, plugin cache reconciliation failures, Chrome extension/native-host issues, missing Computer Use helper paths, plugin_cache_windows_file_lock, missing-helper-path, native pipe startup failures, or cases where Chrome/Computer Use appears enabled but the current thread cannot actually use it.
+description: Diagnose Codex Desktop on Windows when Chrome, Computer Use, desktop-control plugins, bundled plugin cache, current-thread capability loading, extension/native-host handshakes, helper paths, plugin_cache_windows_file_lock, missing-helper-path, native pipe startup failures, or enabled-but-unusable plugin states break. Use for evidence-first diagnosis and safe recovery boundaries, not broad connector support.
 ---
 
 # Codex Desktop Doctor
 
-Use this skill to diagnose and safely recover Codex Desktop **Chrome** and **Computer Use** plugin failures on Windows. Keep the scope narrow: do not diagnose GitHub, Gmail, Drive, Photoshop, Cloudflare, or unrelated connector issues unless the user explicitly expands the scope.
+Use this skill to diagnose and safely recover Codex Desktop **Chrome**, **Computer Use**, and closely related Windows desktop capability-loading failures. Keep the first-line scope narrow: do not diagnose GitHub, Gmail, Drive, Photoshop, Cloudflare, billing, model routing, or unrelated connector issues unless the project scope has been intentionally expanded.
 
 This is an agent workflow, not a universal repair script. Inspect the user's actual machine, explain the evidence in plain language, and only propose repairs that preserve Codex default paths.
 
@@ -40,6 +40,7 @@ Verify the real surface the user asked about.
    - Computer Use helper path missing.
    - Current-thread backend/tool not exposed even though local files are present.
    - User permission or app approval issue.
+   - Version drift between installed Codex package, bundled marketplace mirror, and user plugin cache.
 
 4. Explain why it happened.
    - On Windows, running executables and native hosts can keep file handles open.

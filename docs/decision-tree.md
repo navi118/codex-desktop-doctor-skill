@@ -9,6 +9,7 @@ Ask which surface is actually broken:
 - Chrome plugin: Codex cannot control Chrome through the Codex Chrome Extension.
 - Computer Use: Codex cannot control Windows apps.
 - Both: Chrome and Computer Use failed around the same update or restart.
+- Capability loading: settings show a plugin enabled, but the current thread does not expose the related tool/backend.
 
 If the user reports GitHub, Gmail, Drive, Photoshop, Cloudflare, automations, or model routing, stop and explain that this project does not cover that scope yet.
 
@@ -95,6 +96,7 @@ Use this mapping:
 | Backend not exposed in current thread but local checks pass | Try a new Codex thread or restart Codex before editing files. |
 | `missing-helper-path` with missing Computer Use cache files | Consider default-path bundled cache repair with backup and approval. |
 | `plugin_cache_windows_file_lock` after update | Close Chrome and Codex, then repair or let Codex rebuild default cache. |
+| Enabled plugin points to missing or old versioned path | Classify as version drift; rebuild only from official installed Codex source after approval. |
 | Permission or app approval denied | Ask the user to approve app control; do not edit cache. |
 
 ## 7. Validate Before Saying Fixed

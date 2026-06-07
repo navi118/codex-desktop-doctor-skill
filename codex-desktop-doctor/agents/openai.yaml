@@ -1,6 +1,6 @@
 interface:
   display_name: "Codex Desktop Doctor"
-  short_description: "Fix Chrome and Computer Use issues."
+  short_description: "Diagnose Windows Codex Desktop plugin and desktop-control failures."
   default_prompt: "Use $codex-desktop-doctor to diagnose why Codex Desktop Chrome or Computer Use is unavailable on Windows."
 
 policy:

@@ -1,13 +1,14 @@
 # Maintainer Notes
 
-## Initial Scope
+## Current Scope
 
-This project intentionally starts with only two Codex Desktop bundled plugins:
+This project intentionally starts with the Windows Codex Desktop surfaces that produce the clearest desktop-control failures:
 
 - Chrome
 - Computer Use
+- closely related bundled plugin cache and current-thread capability loading problems
 
-The first release should not cover GitHub, Gmail, Drive, Photoshop, Cloudflare, automations, model routing, or general Codex config cleanup. Narrow scope makes the skill easier to trust and easier to maintain.
+The project should not cover GitHub, Gmail, Drive, Photoshop, Cloudflare, automations, model routing, billing, or general Codex config cleanup until there is repeated evidence and a clear validation method. Narrow scope makes the skill easier to trust and easier to maintain.
 
 ## Why No Repair Script In v0.1
 
@@ -37,9 +38,11 @@ Do not ask users to upload full logs if they may contain private paths, thread t
 
 ## Release Bar
 
-Before publishing v0.1.0:
+Before publishing a release:
 
 - `SKILL.md` validates.
-- README clearly says scope is Chrome and Computer Use only.
+- README clearly says the supported scope and non-goals.
 - Examples explain why failures happen.
 - Safety boundaries forbid deleting `.codex` or pretending unrelated automation is a repair.
+- New claims are backed by an issue, local reproduction, sanitized logs, or a documented maintainer case.
+- Release notes explain what changed and what evidence motivated the change.

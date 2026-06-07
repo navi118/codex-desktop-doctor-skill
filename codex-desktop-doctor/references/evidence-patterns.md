@@ -89,6 +89,31 @@ Safe next action:
 - Restart Codex if the new thread still cannot load the capability.
 - Do not rebuild plugin cache unless file/log evidence also supports cache corruption.
 
+## Version Drift Or Partial Bundled State
+
+Signals:
+
+```text
+plugin cache entry not found
+marketplace entry missing
+bundled marketplace path missing
+helper path points to older version
+enabled plugin exists but callable backend does not appear
+```
+
+Likely meaning:
+- Codex Desktop, the bundled marketplace mirror, and the user plugin cache may not agree on the same plugin version.
+- A previous update or cleanup may have left stale paths in config or state.
+
+Next checks:
+- Compare the installed Codex app version with the versioned bundled plugin cache directories.
+- Confirm the enabled plugin points to an existing default cache path.
+- Confirm the current thread exposes the capability after a fresh thread or app restart.
+
+Do not assume:
+- Do not hardcode a version path from another machine.
+- Do not call version drift fixed until the real Chrome or Computer Use surface works.
+
 ## User Approval Or App Permission Issue
 
 Signals:

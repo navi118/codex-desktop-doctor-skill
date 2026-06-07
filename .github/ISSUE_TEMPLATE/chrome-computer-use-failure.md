@@ -6,6 +6,8 @@ labels: ["windows", "chrome", "computer-use"]
 assignees: []
 ---
 
+Before opening: this project only accepts real Windows Codex Desktop cases with sanitized evidence. Do not paste full private logs, tokens, email addresses, project paths, or screenshots containing secrets.
+
 ## Scope Check
 
 Which surface is affected?
@@ -13,6 +15,7 @@ Which surface is affected?
 - [ ] Chrome plugin
 - [ ] Computer Use plugin
 - [ ] Both Chrome and Computer Use
+- [ ] Plugin appears enabled, but the current thread cannot load/use it
 
 ## What Happened
 
@@ -29,8 +32,17 @@ Computer Use also says helper paths are unavailable.
 
 - Windows version:
 - Codex Desktop version:
+- Codex install/update date if known:
 - Chrome version:
 - Was Chrome open during Codex update? yes / no / unknown
+
+## Timing
+
+- [ ] Started after Codex update
+- [ ] Started after enabling/disabling a plugin
+- [ ] Started after restarting Codex
+- [ ] Started after Chrome was left open
+- [ ] Unknown
 
 ## Chrome Checks
 
@@ -56,9 +68,29 @@ Paste only short sanitized excerpts.
 Replace private paths with %USERPROFILE% or <redacted>.
 ```
 
+Useful strings include:
+
+```text
+plugin_cache_windows_file_lock
+bundled_plugins_reconcile_failed
+os error 5
+missing-helper-path
+Windows Computer Use helper paths are unavailable
+native pipe startup failed
+Cannot communicate with the Codex Chrome Extension
+```
+
 ## Expected Behavior
 
 What should have happened?
+
+## Validation Result
+
+What proves it is still broken or fixed?
+
+- Chrome:
+- Computer Use:
+- Current thread capability:
 
 ## Notes
 
