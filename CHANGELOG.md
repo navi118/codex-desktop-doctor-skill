@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.1 - 2026-06-07
+
+- Add a non-technical quick diagnosis checklist for first-time Windows Codex Desktop users.
+- Link the checklist from the README so users can start without reading logs first.
+- Keep the checklist diagnostic-only; no repair scripts or destructive steps were added.
+
 ## v0.2.0 - 2026-06-07
 
 - Reposition the project from a narrow bug workaround to a Windows Codex Desktop diagnostic skill.

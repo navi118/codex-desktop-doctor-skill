@@ -26,6 +26,14 @@ Use this skill when Codex Desktop on Windows shows symptoms like:
 
 The first release focuses on Chrome and Computer Use. Broader plugin, skill, MCP, and connector diagnosis may be added only when there is real evidence and repeatable validation.
 
+## Quick Checklist
+
+If you are not sure where to start, use the plain-language checklist first:
+
+- [docs/non-technical-checklist.md](docs/non-technical-checklist.md)
+
+中文：如果你不是程序员，先看这个快速清单。它会帮你判断是 Chrome、Computer Use、当前线程能力加载，还是需要进一步看日志。
+
 ## Common Root Causes
 
 Codex Desktop uses bundled plugin files under the user's Codex cache. On Windows, a running executable or native host can keep a file locked. If Codex updates or reconciles bundled plugins while Chrome or a native host still holds a file handle, Windows may return access denied. That can leave the bundled plugin cache in a partial state.
@@ -117,6 +125,7 @@ codex-desktop-doctor-skill/
 ├── docs/
 │   ├── decision-tree.md
 │   ├── maintainer-notes.md
+│   ├── non-technical-checklist.md
 │   ├── openai-oss-application.md
 │   ├── real-issue-playbook.md
 │   └── supported-failures.md
