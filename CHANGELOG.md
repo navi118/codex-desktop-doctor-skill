@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Add a beginner FAQ for common project scope, safety, privacy, and issue-reporting questions.
+- Respond to external documentation issue #5.
+
 ## v0.2.3 - 2026-06-09
 
 - Add health report reconcile timeline extraction for bundled plugin update events.

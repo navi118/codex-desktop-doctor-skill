@@ -34,6 +34,16 @@ If you are not sure where to start, use the plain-language checklist first:
 
 中文：如果你不是程序员，先看这个快速清单。它会帮你判断是 Chrome、Computer Use、当前线程能力加载，还是需要进一步看日志。
 
+## FAQ
+
+For common beginner questions, see:
+
+- [docs/faq.md](docs/faq.md)
+
+It explains what this project is, what it does not repair automatically, what information is safe to include in an issue, and why Chrome opening normally does not prove the Codex Chrome plugin works.
+
+中文：常见问题看 FAQ。它会解释这个项目是不是官方项目、会不会自动修、issue 里什么信息能贴，以及为什么 Chrome 能打开不等于 Codex Chrome 插件正常。
+
 ## Read-Only Health Report
 
 For safer issue preparation, this repository includes a read-only PowerShell report helper:
@@ -142,6 +152,7 @@ codex-desktop-doctor-skill/
 │       └── safe-repair-boundaries.md
 ├── docs/
 │   ├── decision-tree.md
+│   ├── faq.md
 │   ├── maintainer-notes.md
 │   ├── non-technical-checklist.md
 │   ├── openai-oss-application.md
