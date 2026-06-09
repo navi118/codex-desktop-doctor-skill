@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.2.2 - 2026-06-09
+
+- Add a read-only PowerShell health report helper for safer issue preparation.
+- Document what the report collects, what it avoids, and how to interpret common error patterns.
+- Keep the helper diagnostic-only: it does not repair, delete, reinstall, edit config, scan thread sessions, or include full log lines.
+- Respond to external feature request #3.
+
 ## v0.2.1 - 2026-06-07
 
 - Add a non-technical quick diagnosis checklist for first-time Windows Codex Desktop users.

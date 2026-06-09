@@ -13,6 +13,7 @@ This project should grow from real Codex Desktop failure evidence, not from gues
 ## Near-Term v0.2.x
 
 - Expand the evidence pattern catalog with real sanitized reports.
+- Maintain the read-only health report helper as new safe evidence fields are identified.
 - Add a small version matrix for observed Codex Desktop builds and bundled plugin paths.
 - Improve issue templates based on user reports.
 - Add more examples for failed validation and inconclusive diagnosis.
@@ -20,7 +21,6 @@ This project should grow from real Codex Desktop failure evidence, not from gues
 
 ## Later v0.3.x
 
-- Consider narrow scripts only for read-only health reports.
 - Consider reversible repair helpers only after repeated cases and rollback testing.
 - Consider additional Codex Desktop plugin surfaces only when there is a real validation method.
 

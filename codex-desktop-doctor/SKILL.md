@@ -29,6 +29,7 @@ Verify the real surface the user asked about.
 
 2. Gather evidence before changing anything.
    - Read relevant Codex config, plugin cache paths, marketplace paths, and recent logs.
+   - If preparing a user-facing issue report, consider the repository's read-only health report helper, but treat it as evidence only, not proof of repair.
    - Check whether the current thread exposes the required skill/tool path.
    - For Chrome, inspect Chrome running state, extension state, native host manifest, and actual browser backend identity.
    - For Computer Use, inspect the helper path, native pipe logs, and whether the official Computer Use client can list apps.
@@ -66,6 +67,7 @@ Read these only when needed:
 - `references/chrome-and-computer-use.md`: practical diagnosis workflow, safe checks, and validation rules.
 - `references/evidence-patterns.md`: log messages and what they usually mean.
 - `references/safe-repair-boundaries.md`: allowed repairs, forbidden repairs, and user approval boundaries.
+- `../docs/read-only-health-report.md`: optional helper for sanitized issue-report evidence.
 
 ## Reporting Style
 

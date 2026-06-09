@@ -80,6 +80,18 @@ native pipe startup failed
 Cannot communicate with the Codex Chrome Extension
 ```
 
+## Optional Read-Only Health Report
+
+If you used the read-only helper, paste the relevant summary only. Do not paste private full logs.
+
+```powershell
+.\scripts\codex-desktop-health-report.ps1
+```
+
+- Health report attached or summarized? yes / no
+- Any nonzero error pattern counts:
+- Any missing expected helper files:
+
 ## Expected Behavior
 
 What should have happened?

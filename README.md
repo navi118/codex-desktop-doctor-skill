@@ -34,6 +34,18 @@ If you are not sure where to start, use the plain-language checklist first:
 
 中文：如果你不是程序员，先看这个快速清单。它会帮你判断是 Chrome、Computer Use、当前线程能力加载，还是需要进一步看日志。
 
+## Read-Only Health Report
+
+For safer issue preparation, this repository includes a read-only PowerShell report helper:
+
+```powershell
+.\scripts\codex-desktop-health-report.ps1
+```
+
+It prints JSON to stdout and does not repair, delete, reinstall, or edit Codex state. It checks Windows/Codex version basics, default bundled plugin cache paths, Chrome and Computer Use helper file presence, and counts known error patterns in recent Codex Desktop app logs.
+
+See [docs/read-only-health-report.md](docs/read-only-health-report.md).
+
 ## Common Root Causes
 
 Codex Desktop uses bundled plugin files under the user's Codex cache. On Windows, a running executable or native host can keep a file locked. If Codex updates or reconciles bundled plugins while Chrome or a native host still holds a file handle, Windows may return access denied. That can leave the bundled plugin cache in a partial state.
@@ -54,6 +66,7 @@ When this happens, Chrome can fail because the extension or native host handshak
 ## What This Skill Does Not Do
 
 - It does not include a universal PowerShell repair script.
+- It does not auto-repair from the read-only health report.
 - It does not diagnose GitHub, Gmail, Google Drive, Photoshop, Cloudflare, billing, model routing, or general account support yet.
 - It does not tell agents to modify arbitrary global config.
 - It does not treat `gh` CLI, shell app launching, or normal Chrome browsing as proof that the Codex plugins work.
@@ -113,6 +126,9 @@ codex-desktop-doctor-skill/
 ├── CONTRIBUTING.md
 ├── LICENSE
 ├── ROADMAP.md
+├── scripts/
+│   ├── README.md
+│   └── codex-desktop-health-report.ps1
 ├── .github/ISSUE_TEMPLATE/
 │   └── chrome-computer-use-failure.md
 ├── codex-desktop-doctor/
@@ -127,6 +143,7 @@ codex-desktop-doctor-skill/
 │   ├── maintainer-notes.md
 │   ├── non-technical-checklist.md
 │   ├── openai-oss-application.md
+│   ├── read-only-health-report.md
 │   ├── real-issue-playbook.md
 │   └── supported-failures.md
 └── examples/

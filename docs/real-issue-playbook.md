@@ -26,12 +26,13 @@ The issue does not need to include full private logs. It does need enough saniti
 1. Record the visible symptom.
 2. Record environment basics: Windows version, Codex Desktop version, Chrome version if relevant.
 3. Paste only short sanitized log excerpts.
-4. State what validation failed:
+4. Optionally include a summary from `scripts/codex-desktop-health-report.ps1`; do not paste full private logs or thread session content.
+5. State what validation failed:
    - Chrome extension backend could not list/use tabs.
    - Computer Use client could not list apps.
    - Current thread did not expose the capability.
-5. Add labels such as `windows`, `chrome`, `computer-use`, `plugin-cache`, `capability-loading`, or `needs-evidence`.
-6. Close the issue only after a documentation update, diagnosis update, release note, or verified user outcome.
+6. Add labels such as `windows`, `chrome`, `computer-use`, `plugin-cache`, `capability-loading`, or `needs-evidence`.
+7. Close the issue only after a documentation update, diagnosis update, release note, or verified user outcome.
 
 ## Good Early Issues
 
