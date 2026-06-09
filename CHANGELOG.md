@@ -1,9 +1,11 @@
 # Changelog
 
-## Unreleased
+## v0.2.4 - 2026-06-09
 
 - Add a beginner FAQ for common project scope, safety, privacy, and issue-reporting questions.
 - Respond to external documentation issue #5.
+- Clarify the difference between diagnosis and repair near the top of the README.
+- Respond to external documentation issue #6.
 
 ## v0.2.3 - 2026-06-09
 

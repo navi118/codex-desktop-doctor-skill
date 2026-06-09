@@ -4,6 +4,17 @@ Codex Desktop Doctor is an evidence-first Codex Skill for diagnosing **Codex Des
 
 中文说明：这是给 Codex Agent 用的 Windows 桌面端诊断 Skill。第一阶段重点覆盖 Chrome 和 Computer Use，因为这两个能力最容易暴露 Codex Desktop、插件缓存、线程能力加载、Windows 文件锁之间的问题。
 
+## Diagnosis vs Repair
+
+This project separates diagnosis from repair:
+
+- Diagnosis means collecting evidence, identifying the likely cause, and explaining what should be checked next.
+- Repair means changing files, plugin cache state, configuration, or other Codex Desktop state.
+- Repairs require stronger evidence, a backup or rollback path, and explicit user approval.
+- Opening Chrome, launching a Windows app, or running shell automation is not proof that the official Codex Chrome or Computer Use plugin surface is fixed.
+
+中文：诊断是先找证据、判断原因、说明下一步；修复才是改文件、改缓存或改配置。修复必须有更强证据、备份/回滚方式，并得到用户明确同意。Chrome 能打开、Windows 应用能启动，不等于 Codex 官方插件真的修好了。
+
 ## Why This Exists
 
 Codex Desktop failures are easy to misdiagnose. Chrome can open normally while the Codex Chrome plugin is broken. PowerShell can launch apps while Computer Use is unavailable. Plugin files can exist on disk while the current thread still cannot load the backend.
