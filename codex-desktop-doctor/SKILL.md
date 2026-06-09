@@ -37,6 +37,7 @@ Verify the real surface the user asked about.
 3. Classify the failure.
    - File lock during update or plugin reconciliation.
    - Partial bundled plugin cache or marketplace mirror.
+   - Transient reconcile failure followed by later successful reconcile.
    - Chrome extension/native host mismatch.
    - Computer Use helper path missing.
    - Current-thread backend/tool not exposed even though local files are present.

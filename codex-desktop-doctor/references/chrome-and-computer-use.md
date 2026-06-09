@@ -48,6 +48,8 @@ Chrome plugin failures often involve three moving pieces:
 
 On Windows, running executables cannot always be moved, replaced, or deleted. If Codex tries to reconcile a mutable plugin cache while Chrome or a native host still has a handle open, Windows can return access denied. The result can be a partial update: some plugin files are new, some are old, and some expected helper paths are missing.
 
+If a later `bundled_plugins_reconcile_completed` event appears after the failure, the cache may have recovered. Treat that as a separate state from persistent damage. Still validate the real Chrome backend or Computer Use helper before calling the issue fixed.
+
 ## Why Computer Use Can Break At The Same Time
 
 Computer Use depends on bundled plugin files and helper paths. If bundled plugin reconciliation fails on Chrome first, the broader bundled plugin marketplace or cache can be left inconsistent. Computer Use may then fail even though the visible error mentions only its own helper or native pipe.

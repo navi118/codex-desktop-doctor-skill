@@ -23,6 +23,8 @@ To save a report for an issue:
 - Whether expected Chrome and Computer Use helper files exist in versioned plugin folders.
 - Process counts for Codex, Chrome, Chrome extension host, and Computer Use helper.
 - Counts of common error strings in recent Codex Desktop app logs.
+- A bounded bundled plugin reconcile timeline.
+- Whether a recent reconcile failure was followed by a later successful reconcile.
 
 ## What It Avoids
 
@@ -49,6 +51,26 @@ Cannot communicate with the Codex Chrome Extension
 ```
 
 ## How To Interpret It
+
+### Reconcile Assessment
+
+The report includes `logs.reconcileAssessment.status`.
+
+Useful statuses:
+
+```text
+no-recent-reconcile-failure
+transient-failure-followed-by-success
+failure-without-later-success
+```
+
+`transient-failure-followed-by-success` means the report found a bundled plugin reconcile failure and then found a later `bundled_plugins_reconcile_completed` event. This suggests Codex may have recovered the plugin cache, but it does not prove Chrome or Computer Use is functional.
+
+`failure-without-later-success` means the report found a recent bundled plugin reconcile failure and did not find a later success in the scanned logs. Treat this as possible persistent cache damage until the real plugin surfaces are validated.
+
+The timeline is intentionally bounded and sanitized. It includes event kind, plugin name, reason, error category, file name, and line number. It does not include full log lines.
+
+### File Lock Evidence
 
 If `plugin_cache_windows_file_lock`, `os error 5`, or `failed to remove existing plugin cache entry` appears near a Codex update, Chrome or the extension host may have locked a file that Codex tried to replace.
 

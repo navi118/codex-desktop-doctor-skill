@@ -89,6 +89,7 @@ If you used the read-only helper, paste the relevant summary only. Do not paste 
 ```
 
 - Health report attached or summarized? yes / no
+- `logs.reconcileAssessment.status`:
 - Any nonzero error pattern counts:
 - Any missing expected helper files:
 

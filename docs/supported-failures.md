@@ -35,9 +35,11 @@ Symptoms:
 - Logs mention `bundled_plugins_reconcile_failed`.
 - Logs mention `plugin_cache_windows_file_lock`.
 - Paths under `.codex\plugins\cache\openai-bundled` are missing or partial.
+- Recent logs need classification as transient recovery or possible persistent damage.
 
 Validation:
 
+- Recent logs show whether `bundled_plugins_reconcile_completed` appeared after the failure.
 - The affected official plugin surface works after refresh or repair.
 
 ### Current-Thread Capability Loading Failure

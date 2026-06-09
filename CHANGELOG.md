@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.2.3 - 2026-06-09
+
+- Add health report reconcile timeline extraction for bundled plugin update events.
+- Distinguish transient reconcile failures followed by success from failures without later success.
+- Add a core Chrome update file-lock recovery example based on a maintainer-reported case.
+- Expand documentation for interpreting `plugin_cache_windows_file_lock` without over-claiming persistent damage.
+- Respond to maintainer-reported core issue #4.
+
 ## v0.2.2 - 2026-06-09
 
 - Add a read-only PowerShell health report helper for safer issue preparation.

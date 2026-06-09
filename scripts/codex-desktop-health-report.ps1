@@ -179,6 +179,186 @@ function Get-LogPatternSummary {
     return $summary
 }
 
+function Get-FieldValue {
+    param(
+        [string]$Text,
+        [string]$Field
+    )
+
+    $match = [regex]::Match($Text, "(?:^|\s)$([regex]::Escape($Field))=(?<value>[^\s]+)")
+    if ($match.Success) {
+        return $match.Groups["value"].Value.Trim('"')
+    }
+
+    return $null
+}
+
+function Get-ReconcileEvents {
+    param([object[]]$Files)
+
+    $events = @()
+    $eventPatterns = @(
+        "bundled_plugins_reconcile_started",
+        "bundled_plugins_reconcile_completed",
+        "bundled_plugins_reconcile_failed",
+        "bundled_plugins_marketplace_install_failed",
+        "bundled_plugin_reinstall_uninstall_requested",
+        "bundled_plugin_install_requested"
+    )
+
+    foreach ($file in $Files) {
+        $lineNumber = 0
+
+        try {
+            foreach ($line in Get-Content -LiteralPath $file.FullName -ErrorAction Stop) {
+                $lineNumber += 1
+
+                $matchesEvent = $false
+                foreach ($pattern in $eventPatterns) {
+                    if ($line.Contains($pattern)) {
+                        $matchesEvent = $true
+                        break
+                    }
+                }
+
+                if (-not $matchesEvent) {
+                    continue
+                }
+
+                $timestampMatch = [regex]::Match($line, "^(?<timestamp>\d{4}-\d{2}-\d{2}T[^\s]+)")
+                if (-not $timestampMatch.Success) {
+                    continue
+                }
+
+                $timestamp = [datetime]::MinValue
+                if (-not [datetime]::TryParse($timestampMatch.Groups["timestamp"].Value, [ref]$timestamp)) {
+                    continue
+                }
+
+                $kind = "other"
+                if ($line.Contains("bundled_plugins_reconcile_started")) {
+                    $kind = "reconcile_started"
+                }
+                elseif ($line.Contains("bundled_plugins_reconcile_completed")) {
+                    $kind = "reconcile_completed"
+                }
+                elseif ($line.Contains("bundled_plugins_reconcile_failed")) {
+                    $kind = "reconcile_failed"
+                }
+                elseif ($line.Contains("bundled_plugins_marketplace_install_failed")) {
+                    $kind = "marketplace_install_failed"
+                }
+                elseif ($line.Contains("bundled_plugin_reinstall_uninstall_requested")) {
+                    $kind = "plugin_reinstall_uninstall_requested"
+                }
+                elseif ($line.Contains("bundled_plugin_install_requested")) {
+                    $kind = "plugin_install_requested"
+                }
+
+                $fileLockEvidence = (
+                    $line.Contains("plugin_cache_windows_file_lock") -or
+                    $line.Contains("os error 5") -or
+                    $line.Contains("Access is denied") -or
+                    $line.Contains("failed to remove existing plugin cache entry") -or
+                    $line.Contains("failed to back up plugin cache entry")
+                )
+
+                $events += [pscustomobject]@{
+                    timestamp = $timestamp
+                    kind = $kind
+                    pluginName = Get-FieldValue -Text $line -Field "pluginName"
+                    reason = Get-FieldValue -Text $line -Field "reason"
+                    installReason = Get-FieldValue -Text $line -Field "installReason"
+                    installPhase = Get-FieldValue -Text $line -Field "installPhase"
+                    errorCategory = Get-FieldValue -Text $line -Field "errorCategory"
+                    fileLockEvidence = $fileLockEvidence
+                    fileName = $file.Name
+                    lineNumber = $lineNumber
+                }
+            }
+        }
+        catch {
+            continue
+        }
+    }
+
+    return @($events | Sort-Object timestamp)
+}
+
+function Convert-ReconcileEventForReport {
+    param([object]$Event)
+
+    return @{
+        timestamp = $Event.timestamp.ToString("o")
+        kind = $Event.kind
+        pluginName = $Event.pluginName
+        reason = $Event.reason
+        installReason = $Event.installReason
+        installPhase = $Event.installPhase
+        errorCategory = $Event.errorCategory
+        fileLockEvidence = $Event.fileLockEvidence
+        fileName = $Event.fileName
+        lineNumber = $Event.lineNumber
+    }
+}
+
+function Get-ReconcileAssessment {
+    param([object[]]$Events)
+
+    $safeEvents = @($Events | Where-Object {
+        $null -ne $_ -and
+        $_.PSObject.Properties.Name -contains "kind" -and
+        $_.PSObject.Properties.Name -contains "timestamp"
+    })
+
+    $failures = @($safeEvents | Where-Object {
+        $_.kind -eq "reconcile_failed" -or $_.kind -eq "marketplace_install_failed"
+    } | Sort-Object timestamp)
+
+    if ($failures.Count -eq 0) {
+        return @{
+            status = "no-recent-reconcile-failure"
+            latestFailure = $null
+            latestSuccessAfterFailure = $null
+            fileLockEvidence = $false
+            affectedPlugins = @()
+            explanation = "No recent bundled plugin reconcile failure was found in the scanned logs."
+        }
+    }
+
+    $latestFailure = $failures[-1]
+    $successAfterFailure = @($safeEvents | Where-Object {
+        $_.kind -eq "reconcile_completed" -and $_.timestamp -gt $latestFailure.timestamp
+    } | Sort-Object timestamp | Select-Object -First 1)
+
+    $fileLockEvidence = [bool](@($failures | Where-Object { $_.fileLockEvidence }).Count -gt 0)
+    $affectedPlugins = @($failures |
+        ForEach-Object { $_.pluginName } |
+        Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
+        Sort-Object -Unique)
+
+    if ($successAfterFailure.Count -gt 0) {
+        $success = $successAfterFailure[0]
+        return @{
+            status = "transient-failure-followed-by-success"
+            latestFailure = Convert-ReconcileEventForReport $latestFailure
+            latestSuccessAfterFailure = Convert-ReconcileEventForReport $success
+            fileLockEvidence = $fileLockEvidence
+            affectedPlugins = $affectedPlugins
+            explanation = "A bundled plugin reconcile failure was followed by a later successful reconcile in the scanned logs. This suggests recovery happened, but the functional Chrome or Computer Use surface should still be validated."
+        }
+    }
+
+    return @{
+        status = "failure-without-later-success"
+        latestFailure = Convert-ReconcileEventForReport $latestFailure
+        latestSuccessAfterFailure = $null
+        fileLockEvidence = $fileLockEvidence
+        affectedPlugins = $affectedPlugins
+        explanation = "A bundled plugin reconcile failure was found without a later successful reconcile in the scanned logs. This may indicate persistent plugin cache damage until functional validation proves otherwise."
+    }
+}
+
 function Get-PluginVersionReport {
     param(
         [string]$CacheRoot,
@@ -247,6 +427,7 @@ $patterns = @(
 )
 
 $recentLogFiles = Get-RecentLogFiles -Roots $logRoots -Days $LogDays -Limit $MaxLogFiles
+$reconcileEvents = Get-ReconcileEvents -Files $recentLogFiles
 
 $report = [ordered]@{
     schemaVersion = 1
@@ -289,10 +470,14 @@ $report = [ordered]@{
         scannedFileCount = $recentLogFiles.Count
         scannedSinceDays = $LogDays
         patternSummary = Get-LogPatternSummary -Files $recentLogFiles -Patterns $patterns
+        reconcileTimeline = @($reconcileEvents | Select-Object -Last 30 | ForEach-Object { Convert-ReconcileEventForReport $_ })
+        reconcileAssessment = Get-ReconcileAssessment -Events $reconcileEvents
     }
     interpretationHints = @(
         "If plugin_cache_windows_file_lock, os error 5, or failed to remove existing plugin cache entry appears near a Codex update, Chrome or the extension host may have locked files Codex tried to replace.",
-        "If helperExists is false for Computer Use, the bundled plugin cache may be incomplete.",
+        "If reconcileAssessment.status is transient-failure-followed-by-success, the cache may have recovered, but functional validation is still required.",
+        "If reconcileAssessment.status is failure-without-later-success, treat the cache as possibly damaged until Chrome or Computer Use validation proves otherwise.",
+        "If expectedFileExistsAny is false for Computer Use, the bundled plugin cache may be incomplete.",
         "If files exist but the plugin still fails, validate the real Chrome extension backend or Computer Use helper before claiming repair."
     )
 }

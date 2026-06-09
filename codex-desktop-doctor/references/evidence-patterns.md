@@ -25,6 +25,11 @@ Do not assume:
 - Do not assume the only broken plugin is the one named in the first log line.
 - A Chrome cache failure can leave Computer Use broken too.
 
+Important nuance:
+- If a later `bundled_plugins_reconcile_completed` appears after the failure, classify the event as a transient failure followed by apparent recovery.
+- If no later successful reconcile appears in the scanned logs, classify it as possible persistent cache damage.
+- In both cases, functional validation is still required before saying Chrome or Computer Use is healthy.
+
 ## Computer Use Helper Missing
 
 Signals:

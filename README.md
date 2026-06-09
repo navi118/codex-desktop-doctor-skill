@@ -42,13 +42,15 @@ For safer issue preparation, this repository includes a read-only PowerShell rep
 .\scripts\codex-desktop-health-report.ps1
 ```
 
-It prints JSON to stdout and does not repair, delete, reinstall, or edit Codex state. It checks Windows/Codex version basics, default bundled plugin cache paths, Chrome and Computer Use helper file presence, and counts known error patterns in recent Codex Desktop app logs.
+It prints JSON to stdout and does not repair, delete, reinstall, or edit Codex state. It checks Windows/Codex version basics, default bundled plugin cache paths, Chrome and Computer Use helper file presence, counts known error patterns in recent Codex Desktop app logs, and summarizes whether bundled plugin reconcile failures were followed by later success.
 
 See [docs/read-only-health-report.md](docs/read-only-health-report.md).
 
 ## Common Root Causes
 
 Codex Desktop uses bundled plugin files under the user's Codex cache. On Windows, a running executable or native host can keep a file locked. If Codex updates or reconciles bundled plugins while Chrome or a native host still holds a file handle, Windows may return access denied. That can leave the bundled plugin cache in a partial state.
+
+Sometimes Codex later reconciles successfully. That matters: a file-lock failure followed by `bundled_plugins_reconcile_completed` is different from a failure with no later success. This project treats the first as a transient failure that still needs functional validation, and the second as possible persistent cache damage.
 
 When this happens, Chrome can fail because the extension or native host handshake is broken. Computer Use can fail at the same time because its helper path or native pipe setup depends on bundled plugin files from the same cache family.
 
@@ -148,6 +150,7 @@ codex-desktop-doctor-skill/
 │   └── supported-failures.md
 └── examples/
     ├── chrome-file-lock-after-update.md
+    ├── chrome-update-file-lock-transient-recovery.md
     ├── computer-use-missing-helper-path.md
     ├── plugin-cache-reconcile-failure.md
     └── thread-capability-not-loaded.md
