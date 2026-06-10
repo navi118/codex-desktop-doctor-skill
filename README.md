@@ -4,6 +4,27 @@ Codex Desktop Doctor is an evidence-first Codex Skill for diagnosing **Codex Des
 
 中文说明：这是给 Codex Agent 用的 Windows 桌面端诊断 Skill。第一阶段重点覆盖 Chrome 和 Computer Use，因为这两个能力最容易暴露 Codex Desktop、插件缓存、线程能力加载、Windows 文件锁之间的问题。
 
+## One-Minute Quick Start
+
+Use this skill when Codex Desktop on Windows can no longer use Chrome or Computer Use correctly, especially after a Codex update, restart, plugin enablement, or bundled plugin cache error.
+
+Install:
+
+```powershell
+git clone https://github.com/navi118/codex-desktop-doctor-skill.git
+Set-Location .\codex-desktop-doctor-skill
+$dest = Join-Path $env:USERPROFILE ".codex\skills\codex-desktop-doctor"
+Copy-Item -Recurse -Force ".\codex-desktop-doctor" $dest
+```
+
+Then start a new Codex thread and ask:
+
+```text
+Use codex-desktop-doctor to diagnose why Chrome or Computer Use stopped working after a Codex update.
+```
+
+中文：如果 Windows 上的 Codex Desktop 更新后，Chrome 或 Computer Use 不能用了，先装这个 Skill，再开新线程让它按证据诊断。它不会自动乱修，也不会把普通 Chrome 能打开当成 Codex 插件已修好。
+
 ## Diagnosis vs Repair
 
 This project separates diagnosis from repair:

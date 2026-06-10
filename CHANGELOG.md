@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.2.5 - 2026-06-10
+
+- Add a one-minute quick start near the top of the README for first-time users.
+- Respond to external documentation issue #8.
+
 ## v0.2.4 - 2026-06-09
 
 - Add a beginner FAQ for common project scope, safety, privacy, and issue-reporting questions.
