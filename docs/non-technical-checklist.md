@@ -4,6 +4,12 @@ Use this checklist before reading logs or changing files. It is for Windows Code
 
 中文：这是非程序员也能先看的快速清单。它只帮助判断方向，不会要求你直接改系统文件。
 
+If you want to see safe mock examples before opening an issue, use:
+
+- [visual-examples.md](visual-examples.md)
+
+中文：如果你想先看脱敏示意图，确认文件夹、错误信息和 issue 内容应该怎么写，可以看这个示例页。
+
 ## 1. What Is Actually Broken?
 
 Pick the closest symptom:

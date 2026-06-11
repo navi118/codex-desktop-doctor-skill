@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Add sanitized visual examples for non-technical users.
+- Show mock skill-folder layout, plugin failure symptoms, good diagnostic summaries, and safe issue excerpts.
+- Respond to external documentation issue #7.
+
 ## v0.2.5 - 2026-06-10
 
 - Add a one-minute quick start near the top of the README for first-time users.

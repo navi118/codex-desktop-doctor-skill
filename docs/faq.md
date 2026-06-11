@@ -64,6 +64,10 @@ Start with the non-technical checklist:
 
 - [non-technical-checklist.md](non-technical-checklist.md)
 
+If you prefer visual examples, see:
+
+- [visual-examples.md](visual-examples.md)
+
 Then run the read-only health report:
 
 ```powershell

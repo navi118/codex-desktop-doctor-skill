@@ -76,6 +76,14 @@ It explains what this project is, what it does not repair automatically, what in
 
 中文：常见问题看 FAQ。它会解释这个项目是不是官方项目、会不会自动修、issue 里什么信息能贴，以及为什么 Chrome 能打开不等于 Codex Chrome 插件正常。
 
+## Visual Examples
+
+For sanitized mock screenshots and safe issue-report examples, see:
+
+- [docs/visual-examples.md](docs/visual-examples.md)
+
+中文：如果你不确定 Skill 文件夹应该长什么样、哪些错误信息能贴到 issue、哪些截图或日志不安全，看这个脱敏示意页。
+
 ## Read-Only Health Report
 
 For safer issue preparation, this repository includes a read-only PowerShell report helper:
@@ -190,7 +198,8 @@ codex-desktop-doctor-skill/
 │   ├── openai-oss-application.md
 │   ├── read-only-health-report.md
 │   ├── real-issue-playbook.md
-│   └── supported-failures.md
+│   ├── supported-failures.md
+│   └── visual-examples.md
 └── examples/
     ├── chrome-file-lock-after-update.md
     ├── chrome-update-file-lock-transient-recovery.md
