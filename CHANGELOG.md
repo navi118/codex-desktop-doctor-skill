@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.2.6 - 2026-06-14
 
 - Add sanitized visual examples for non-technical users.
 - Show mock skill-folder layout, plugin failure symptoms, good diagnostic summaries, and safe issue excerpts.
