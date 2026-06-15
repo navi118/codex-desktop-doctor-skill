@@ -11,6 +11,8 @@ Symptoms:
 - `@Chrome` is installed or enabled but cannot control Chrome.
 - Chrome opens normally, but Codex cannot communicate with the extension.
 - Native host manifest or extension backend appears broken.
+- Native Messaging registry, manifest, and `extension-host.exe` exist, but the Codex browser runtime still exposes only the in-app browser backend.
+- Diagnostic scripts disagree because localized Windows registry output is parsed incorrectly.
 
 Validation:
 
@@ -23,6 +25,7 @@ Symptoms:
 - Computer Use is enabled but cannot control Windows apps.
 - Logs mention `missing-helper-path`.
 - Native pipe startup fails.
+- Plugin files exist, but the active runtime does not receive Computer Use native pipe metadata.
 
 Validation:
 

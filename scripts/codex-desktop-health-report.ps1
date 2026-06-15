@@ -21,6 +21,34 @@ function ConvertTo-SafePath {
     return $Path
 }
 
+function Resolve-EnvironmentPath {
+    param([AllowNull()][string]$Path)
+
+    if ([string]::IsNullOrWhiteSpace($Path)) {
+        return $Path
+    }
+
+    return [Environment]::ExpandEnvironmentVariables($Path)
+}
+
+function Get-ObjectPropertyValue {
+    param(
+        [AllowNull()][object]$Object,
+        [string]$Name
+    )
+
+    if ($null -eq $Object) {
+        return $null
+    }
+
+    $property = $Object.PSObject.Properties[$Name]
+    if ($null -eq $property) {
+        return $null
+    }
+
+    return $property.Value
+}
+
 function Get-DirectoryNames {
     param([string]$Path)
 
@@ -110,6 +138,125 @@ function Get-ProcessCounts {
     }
 
     return $result
+}
+
+function Get-ExtensionHostProcesses {
+    $processes = @()
+
+    foreach ($process in @(Get-Process -Name "extension-host" -ErrorAction SilentlyContinue)) {
+        $path = $null
+        try {
+            $path = $process.Path
+        }
+        catch {
+            $path = $null
+        }
+
+        $processes += @{
+            id = $process.Id
+            path = ConvertTo-SafePath $path
+        }
+    }
+
+    return $processes
+}
+
+function Test-CodexMutablePluginPath {
+    param([AllowNull()][string]$Path)
+
+    if ([string]::IsNullOrWhiteSpace($Path)) {
+        return $false
+    }
+
+    $normalized = $Path.Replace("/", "\")
+    $indicators = @(
+        "\.codex\plugins\cache\openai-bundled\chrome\latest\",
+        "\.codex\.tmp\bundled-marketplaces\openai-bundled\",
+        "\.codex\.tmp\bundled-marketplaces\openai-bundled\plugins\chrome\"
+    )
+
+    foreach ($indicator in $indicators) {
+        if ($normalized.IndexOf($indicator, [StringComparison]::OrdinalIgnoreCase) -ge 0) {
+            return $true
+        }
+    }
+
+    return $false
+}
+
+function Get-ChromeNativeMessagingReport {
+    $hostName = "com.openai.codexextension"
+    $registryPath = "HKCU:\Software\Google\Chrome\NativeMessagingHosts\$hostName"
+    $registryDefaultRaw = $null
+    $registryError = $null
+    $registryExists = Test-Path -LiteralPath $registryPath
+
+    if ($registryExists) {
+        try {
+            $registryDefaultRaw = (Get-Item -LiteralPath $registryPath -ErrorAction Stop).GetValue("")
+        }
+        catch {
+            $registryError = $_.Exception.Message
+        }
+    }
+
+    $manifestPathExpanded = Resolve-EnvironmentPath $registryDefaultRaw
+    $manifestExists = $false
+    $manifestParseError = $null
+    $manifestName = $null
+    $manifestHostPathRaw = $null
+    $manifestAllowedOrigins = @()
+
+    if (-not [string]::IsNullOrWhiteSpace($manifestPathExpanded)) {
+        $manifestExists = Get-FileExists $manifestPathExpanded
+
+        if ($manifestExists) {
+            try {
+                $manifestJson = Get-Content -LiteralPath $manifestPathExpanded -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
+                $manifestName = Get-ObjectPropertyValue -Object $manifestJson -Name "name"
+                $manifestHostPathRaw = Get-ObjectPropertyValue -Object $manifestJson -Name "path"
+                $origins = Get-ObjectPropertyValue -Object $manifestJson -Name "allowed_origins"
+                if ($null -ne $origins) {
+                    $manifestAllowedOrigins = @($origins)
+                }
+            }
+            catch {
+                $manifestParseError = $_.Exception.Message
+            }
+        }
+    }
+
+    $manifestHostPathExpanded = Resolve-EnvironmentPath $manifestHostPathRaw
+    $manifestHostPathExists = $false
+    if (-not [string]::IsNullOrWhiteSpace($manifestHostPathExpanded)) {
+        $manifestHostPathExists = Get-FileExists $manifestHostPathExpanded
+    }
+
+    return @{
+        hostName = $hostName
+        registry = @{
+            keyPath = $registryPath
+            exists = $registryExists
+            defaultValuePresent = -not [string]::IsNullOrWhiteSpace($registryDefaultRaw)
+            manifestPath = ConvertTo-SafePath $manifestPathExpanded
+            error = $registryError
+        }
+        manifest = @{
+            exists = $manifestExists
+            parseError = $manifestParseError
+            name = $manifestName
+            allowedOrigins = $manifestAllowedOrigins
+            hostPath = ConvertTo-SafePath $manifestHostPathExpanded
+            hostPathExists = $manifestHostPathExists
+            hostPathLooksMutableCache = Test-CodexMutablePluginPath $manifestHostPathExpanded
+        }
+        runningExtensionHosts = Get-ExtensionHostProcesses
+        diagnosticNotes = @(
+            "Registry default value is read through PowerShell registry APIs, not localized reg.exe text output.",
+            "A present registry key, valid manifest, and running extension-host process do not prove the Chrome extension backend is exposed to Codex.",
+            "If hostPathLooksMutableCache is true, Chrome may lock a path Codex later tries to reconcile."
+        )
+    }
 }
 
 function Get-RecentLogFiles {
@@ -422,6 +569,8 @@ $patterns = @(
     "Windows Computer Use helper paths are unavailable",
     "computer-use native pipe startup failed",
     "Cannot communicate with the Codex Chrome Extension",
+    "Browser is not available: extension",
+    "Browser is not available: chrome",
     "native host manifest missing",
     "native host manifest invalid"
 )
@@ -430,7 +579,7 @@ $recentLogFiles = Get-RecentLogFiles -Roots $logRoots -Days $LogDays -Limit $Max
 $reconcileEvents = Get-ReconcileEvents -Files $recentLogFiles
 
 $report = [ordered]@{
-    schemaVersion = 1
+    schemaVersion = 2
     generatedAt = (Get-Date).ToString("o")
     safety = @{
         readOnly = $true
@@ -464,6 +613,7 @@ $report = [ordered]@{
         chrome = Get-PluginVersionReport -CacheRoot $pluginCacheRoot -PluginName "chrome" -ExpectedRelativeFile "extension-host\windows\x64\extension-host.exe"
         computerUse = Get-PluginVersionReport -CacheRoot $pluginCacheRoot -PluginName "computer-use" -ExpectedRelativeFile "node_modules\@oai\sky\bin\windows\codex-computer-use.exe"
     }
+    chromeNativeMessaging = Get-ChromeNativeMessagingReport
     processCounts = Get-ProcessCounts
     logs = @{
         roots = @($logRoots | ForEach-Object { ConvertTo-SafePath $_ })
@@ -478,6 +628,7 @@ $report = [ordered]@{
         "If reconcileAssessment.status is transient-failure-followed-by-success, the cache may have recovered, but functional validation is still required.",
         "If reconcileAssessment.status is failure-without-later-success, treat the cache as possibly damaged until Chrome or Computer Use validation proves otherwise.",
         "If expectedFileExistsAny is false for Computer Use, the bundled plugin cache may be incomplete.",
+        "If Chrome native messaging registry and manifest exist but Browser is not available: extension appears, treat it as a backend exposure problem rather than a simple install problem.",
         "If files exist but the plugin still fails, validate the real Chrome extension backend or Computer Use helper before claiming repair."
     )
 }

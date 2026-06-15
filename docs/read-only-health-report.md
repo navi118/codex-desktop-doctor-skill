@@ -8,6 +8,8 @@ This project includes an optional read-only PowerShell report helper:
 
 The helper prints a JSON report to stdout. It does not repair files, delete caches, reinstall plugins, edit configuration, launch Chrome, or control Windows apps.
 
+Current report schema: `2`.
+
 To save a report for an issue:
 
 ```powershell
@@ -20,6 +22,9 @@ To save a report for an issue:
 - Installed Codex AppX package information when available.
 - Whether the default Codex plugin cache paths exist.
 - Bundled plugin names and version directories under `openai-bundled`.
+- Chrome Native Messaging registry and manifest state for `com.openai.codexextension`.
+- Whether the Chrome native host path appears to point into mutable Codex bundled plugin cache locations.
+- Running Chrome extension host process paths when available.
 - Whether expected Chrome and Computer Use helper files exist in versioned plugin folders.
 - Process counts for Codex, Chrome, Chrome extension host, and Computer Use helper.
 - Counts of common error strings in recent Codex Desktop app logs.
@@ -48,6 +53,8 @@ missing-helper-path
 Windows Computer Use helper paths are unavailable
 computer-use native pipe startup failed
 Cannot communicate with the Codex Chrome Extension
+Browser is not available: extension
+Browser is not available: chrome
 ```
 
 ## How To Interpret It
@@ -82,3 +89,26 @@ If all files exist but the plugin still fails, the next step is functional valid
 - Computer Use: confirm the official Computer Use helper can list Windows apps.
 
 Do not call the issue fixed from this report alone.
+
+### Chrome Native Messaging
+
+The report includes `chromeNativeMessaging`.
+
+It reads the native host registry entry through PowerShell registry APIs instead of parsing localized `reg.exe` output. This avoids false negatives on non-English Windows systems where the default registry value label may not appear as literal `(Default)`.
+
+Useful fields:
+
+```text
+chromeNativeMessaging.registry.exists
+chromeNativeMessaging.registry.defaultValuePresent
+chromeNativeMessaging.registry.manifestPath
+chromeNativeMessaging.manifest.exists
+chromeNativeMessaging.manifest.hostPath
+chromeNativeMessaging.manifest.hostPathExists
+chromeNativeMessaging.manifest.hostPathLooksMutableCache
+chromeNativeMessaging.runningExtensionHosts
+```
+
+`hostPathLooksMutableCache = true` means the manifest path appears to point into a Codex bundled plugin cache or marketplace path. That is useful evidence for Windows file-lock risk, because Chrome may keep the native host executable running while Codex later tries to reconcile or replace the same cache tree.
+
+A present registry key, valid manifest, existing host path, and running `extension-host.exe` process still do not prove Chrome is usable from Codex. The final validation is whether the actual Chrome extension backend is exposed and can list or control tabs.

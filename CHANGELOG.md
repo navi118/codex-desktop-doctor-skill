@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.2.7 - 2026-06-15
+
+- Add upstream Windows observations from public `openai/codex` issue reports.
+- Document related Chrome Native Messaging, Chrome backend exposure, Computer Use native pipe, and bundled plugin cache failure shapes.
+- Extend the read-only health report with Chrome Native Messaging registry and manifest checks.
+- Keep the project diagnostic-only; no repair automation was added.
+
 ## v0.2.6 - 2026-06-14
 
 - Add sanitized visual examples for non-technical users.

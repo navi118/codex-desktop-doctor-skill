@@ -40,11 +40,13 @@ Windows Computer Use helper paths are unavailable
 computer-use native pipe startup failed
 computer-use notify config ensure finished
 status=skipped
+SKY_CUA_NATIVE_PIPE_DIRECTORY
 ```
 
 Likely meaning:
 - Codex cannot resolve the Computer Use helper executable.
 - The plugin cache may be missing, partial, or config may point to a path that no longer exists.
+- If helper files exist but `SKY_CUA_NATIVE_PIPE_DIRECTORY` is missing from the active runtime, treat it as a native pipe metadata injection problem rather than simple missing files.
 
 Next checks:
 - Confirm the configured helper path exists.
@@ -62,16 +64,22 @@ native host manifest invalid
 extension not installed
 extension disabled
 Browser is not available
+Browser is not available: extension
+Browser is not available: chrome
 ```
 
 Likely meaning:
 - Chrome, the extension, or the native host handshake is not working.
 - If the backend list shows Chrome as `extension`, use that backend identity rather than assuming the literal name `chrome`.
+- Native Messaging registry and manifest can exist while the Chrome backend is still not exposed to the current Codex browser runtime.
+- On localized Windows systems, parsing `reg.exe` text output can falsely report a missing default registry value.
 
 Next checks:
 - Chrome installed and running.
 - Extension installed and enabled in the selected profile.
 - Native host manifest exists and registry points to it.
+- Prefer PowerShell registry APIs over localized `reg.exe` output when checking the Native Messaging default value.
+- Check whether the manifest host path points into a mutable Codex bundled plugin cache.
 - Actual Chrome extension backend can list tabs.
 
 ## Thread Capability Loading Problem

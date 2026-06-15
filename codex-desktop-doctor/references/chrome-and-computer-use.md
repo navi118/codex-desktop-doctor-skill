@@ -23,6 +23,9 @@ Start with evidence that does not modify the system:
    - Codex Chrome Extension is installed and enabled in the selected Chrome profile.
    - Native Messaging Host manifest exists and points to the expected host.
    - Registry key under `HKCU\Software\Google\Chrome\NativeMessagingHosts\...` matches the manifest path.
+   - Prefer structured PowerShell registry reads over parsing localized `reg.exe` output.
+   - Check whether the manifest host path points into mutable Codex cache locations such as `.codex\plugins\cache\openai-bundled\chrome\latest`.
+   - Remember that a running `extension-host.exe` is not enough; the Chrome extension backend still has to be exposed to Codex.
 
 4. Computer Use-specific checks
    - The Computer Use plugin cache directory exists.
@@ -92,3 +95,5 @@ Call the repair complete only when both relevant conditions pass:
 - Computer Use issue: official Computer Use client can list apps or inspect a window.
 
 If local files look correct but the thread cannot use the backend, classify it as a current-thread capability loading problem. Suggest a new thread or Codex restart rather than editing files.
+
+If the Native Messaging registry entry, manifest, and `extension-host.exe` process all exist but the browser runtime still reports only the in-app browser backend, classify it as a Chrome backend exposure problem. Do not downgrade it to a simple install problem.

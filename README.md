@@ -84,6 +84,14 @@ For sanitized mock screenshots and safe issue-report examples, see:
 
 中文：如果你不确定 Skill 文件夹应该长什么样、哪些错误信息能贴到 issue、哪些截图或日志不安全，看这个脱敏示意页。
 
+## Upstream Windows Observations
+
+For related public `openai/codex` Windows reports that inform this project, see:
+
+- [docs/upstream-windows-observations.md](docs/upstream-windows-observations.md)
+
+These are external observations, not official OpenAI confirmation. They help track repeated Chrome, Computer Use, bundled plugin cache, and native-pipe failure shapes.
+
 ## Read-Only Health Report
 
 For safer issue preparation, this repository includes a read-only PowerShell report helper:
@@ -92,7 +100,7 @@ For safer issue preparation, this repository includes a read-only PowerShell rep
 .\scripts\codex-desktop-health-report.ps1
 ```
 
-It prints JSON to stdout and does not repair, delete, reinstall, or edit Codex state. It checks Windows/Codex version basics, default bundled plugin cache paths, Chrome and Computer Use helper file presence, counts known error patterns in recent Codex Desktop app logs, and summarizes whether bundled plugin reconcile failures were followed by later success.
+It prints JSON to stdout and does not repair, delete, reinstall, or edit Codex state. It checks Windows/Codex version basics, default bundled plugin cache paths, Chrome Native Messaging registry/manifest state, Chrome and Computer Use helper file presence, counts known error patterns in recent Codex Desktop app logs, and summarizes whether bundled plugin reconcile failures were followed by later success.
 
 See [docs/read-only-health-report.md](docs/read-only-health-report.md).
 
@@ -105,6 +113,8 @@ Sometimes Codex later reconciles successfully. That matters: a file-lock failure
 When this happens, Chrome can fail because the extension or native host handshake is broken. Computer Use can fail at the same time because its helper path or native pipe setup depends on bundled plugin files from the same cache family.
 
 中文：核心原因通常不是“用户没装好”，而是 Windows 文件锁加 Codex 更新/插件同步流程，让缓存处在半更新状态。Chrome 先卡住，Computer Use 也可能被牵连。
+
+Even if the Chrome Native Messaging registry key, manifest, and `extension-host.exe` process exist, the Chrome extension backend still may not be exposed to the current Codex browser runtime. This project treats those as useful evidence, not final validation.
 
 ## What This Skill Does Well
 
@@ -199,6 +209,7 @@ codex-desktop-doctor-skill/
 │   ├── read-only-health-report.md
 │   ├── real-issue-playbook.md
 │   ├── supported-failures.md
+│   ├── upstream-windows-observations.md
 │   └── visual-examples.md
 └── examples/
     ├── chrome-file-lock-after-update.md
