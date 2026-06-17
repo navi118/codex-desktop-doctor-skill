@@ -50,6 +50,7 @@ Validation:
 Symptoms:
 
 - Plugin appears enabled in settings.
+- Plugin appears enabled in `config.toml`.
 - Local plugin files look present.
 - The current thread still has no callable backend/tool.
 

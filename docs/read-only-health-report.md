@@ -8,7 +8,7 @@ This project includes an optional read-only PowerShell report helper:
 
 The helper prints a JSON report to stdout. It does not repair files, delete caches, reinstall plugins, edit configuration, launch Chrome, or control Windows apps.
 
-Current report schema: `2`.
+Current report schema: `3`.
 
 To save a report for an issue:
 
@@ -20,6 +20,7 @@ To save a report for an issue:
 
 - Windows version basics.
 - Installed Codex AppX package information when available.
+- Selected non-secret Codex `config.toml` fields, including `runCodexInWindowsSubsystemForLinux`, the `openai-bundled` marketplace source, and Browser/Chrome/Computer Use enabled flags.
 - Whether the default Codex plugin cache paths exist.
 - Bundled plugin names and version directories under `openai-bundled`.
 - Chrome Native Messaging registry and manifest state for `com.openai.codexextension`.
@@ -36,6 +37,7 @@ To save a report for an issue:
 - It does not include full log lines.
 - It does not scan Codex thread session files.
 - It replaces the user profile path with `%USERPROFILE%`.
+- It reports only selected non-secret `config.toml` keys, not the full config file.
 - It does not collect tokens, API keys, emails, prompts, browser cookies, local storage, passwords, or Chrome profile contents.
 - It does not prove a repair. It only prepares evidence for diagnosis.
 
@@ -76,6 +78,26 @@ failure-without-later-success
 `failure-without-later-success` means the report found a recent bundled plugin reconcile failure and did not find a later success in the scanned logs. Treat this as possible persistent cache damage until the real plugin surfaces are validated.
 
 The timeline is intentionally bounded and sanitized. It includes event kind, plugin name, reason, error category, file name, and line number. It does not include full log lines.
+
+### Config Summary
+
+The report includes `codexConfig`.
+
+Useful fields:
+
+```text
+codexConfig.exists
+codexConfig.runCodexInWindowsSubsystemForLinux
+codexConfig.openaiBundledMarketplace.source
+codexConfig.openaiBundledMarketplace.sourceExists
+codexConfig.openaiBundledMarketplace.sourceLooksDefaultTmp
+codexConfig.openaiBundledMarketplace.sourceLooksStableUserCopy
+codexConfig.bundledPluginConfig.browser@openai-bundled.enabled
+codexConfig.bundledPluginConfig.chrome@openai-bundled.enabled
+codexConfig.bundledPluginConfig.computer-use@openai-bundled.enabled
+```
+
+If a plugin is enabled in `config.toml` but the current thread still has no callable backend, treat that as a runtime exposure or capability-loading problem. Do not call the plugin healthy from config alone.
 
 ### File Lock Evidence
 

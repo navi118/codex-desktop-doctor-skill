@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.2.8 - 2026-06-17
+
+- Extend the read-only health report with selected non-secret Codex `config.toml` evidence.
+- Report `openai-bundled` marketplace source state and Browser/Chrome/Computer Use enabled flags.
+- Improve user-profile path sanitization for Windows extended-length paths such as `\\?\C:\Users\...`.
+- Keep the helper diagnostic-only; no config editing or repair automation was added.
+
 ## v0.2.7 - 2026-06-15
 
 - Add upstream Windows observations from public `openai/codex` issue reports.

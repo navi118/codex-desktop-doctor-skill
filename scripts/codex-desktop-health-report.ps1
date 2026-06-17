@@ -14,8 +14,16 @@ function ConvertTo-SafePath {
     }
 
     $userHome = [Environment]::GetFolderPath("UserProfile")
-    if (-not [string]::IsNullOrWhiteSpace($userHome) -and $Path.StartsWith($userHome, [StringComparison]::OrdinalIgnoreCase)) {
-        return "%USERPROFILE%" + $Path.Substring($userHome.Length)
+    $comparisonPath = $Path
+    $displayPrefix = ""
+
+    if ($comparisonPath.StartsWith("\\?\", [StringComparison]::OrdinalIgnoreCase)) {
+        $comparisonPath = $comparisonPath.Substring(4)
+        $displayPrefix = "\\?\"
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($userHome) -and $comparisonPath.StartsWith($userHome, [StringComparison]::OrdinalIgnoreCase)) {
+        return $displayPrefix + "%USERPROFILE%" + $comparisonPath.Substring($userHome.Length)
     }
 
     return $Path
@@ -538,6 +546,132 @@ function Get-PluginVersionReport {
     }
 }
 
+function ConvertFrom-SimpleTomlValue {
+    param([AllowNull()][string]$Value)
+
+    if ($null -eq $Value) {
+        return $null
+    }
+
+    $trimmed = $Value.Trim()
+
+    if ($trimmed.StartsWith('"') -and $trimmed.EndsWith('"')) {
+        if ($trimmed.Length -lt 2) {
+            return ""
+        }
+        return $trimmed.Substring(1, $trimmed.Length - 2)
+    }
+
+    if ($trimmed.StartsWith("'") -and $trimmed.EndsWith("'")) {
+        if ($trimmed.Length -lt 2) {
+            return ""
+        }
+        return $trimmed.Substring(1, $trimmed.Length - 2)
+    }
+
+    if ($trimmed -ieq "true") {
+        return $true
+    }
+
+    if ($trimmed -ieq "false") {
+        return $false
+    }
+
+    return $trimmed
+}
+
+function Get-CodexConfigReport {
+    param([string]$CodexHome)
+
+    $configPath = Join-Path $CodexHome "config.toml"
+    $exists = Get-FileExists $configPath
+    $targetPlugins = @(
+        "browser@openai-bundled",
+        "chrome@openai-bundled",
+        "computer-use@openai-bundled"
+    )
+    $pluginSections = [ordered]@{}
+
+    foreach ($plugin in $targetPlugins) {
+        $pluginSections[$plugin] = @{
+            sectionPresent = $false
+            enabled = $null
+        }
+    }
+
+    $report = [ordered]@{
+        path = ConvertTo-SafePath $configPath
+        exists = $exists
+        runCodexInWindowsSubsystemForLinux = $null
+        openaiBundledMarketplace = @{
+            sectionPresent = $false
+            source = $null
+            sourceExists = $null
+            sourceLooksDefaultTmp = $null
+            sourceLooksStableUserCopy = $null
+        }
+        bundledPluginConfig = $pluginSections
+        diagnosticNotes = @(
+            "Only selected non-secret config keys are reported.",
+            "A plugin can be enabled in config.toml while the active Codex thread still lacks the callable backend.",
+            "Marketplace source presence does not prove the plugin cache is complete."
+        )
+    }
+
+    if (-not $exists) {
+        return $report
+    }
+
+    $currentSection = ""
+    foreach ($line in @(Get-Content -LiteralPath $configPath -ErrorAction SilentlyContinue)) {
+        if ($line -match '^\s*\[(.+)\]\s*$') {
+            $currentSection = $Matches[1]
+
+            foreach ($plugin in $targetPlugins) {
+                if ($currentSection -eq "plugins.`"$plugin`"") {
+                    $report.bundledPluginConfig[$plugin].sectionPresent = $true
+                }
+            }
+
+            if ($currentSection -eq "marketplaces.openai-bundled") {
+                $report.openaiBundledMarketplace.sectionPresent = $true
+            }
+
+            continue
+        }
+
+        if ($line -notmatch '^\s*([A-Za-z0-9_\-]+)\s*=\s*(.+?)\s*(?:#.*)?$') {
+            continue
+        }
+
+        $key = $Matches[1]
+        $value = ConvertFrom-SimpleTomlValue $Matches[2]
+
+        if ($currentSection -eq "" -and $key -eq "runCodexInWindowsSubsystemForLinux") {
+            $report.runCodexInWindowsSubsystemForLinux = $value
+            continue
+        }
+
+        if ($currentSection -eq "marketplaces.openai-bundled" -and $key -eq "source") {
+            $sourcePath = Resolve-EnvironmentPath $value
+            $normalized = $sourcePath.Replace("/", "\")
+            $report.openaiBundledMarketplace.source = ConvertTo-SafePath $sourcePath
+            $report.openaiBundledMarketplace.sourceExists = Get-DirectoryExists $sourcePath
+            $report.openaiBundledMarketplace.sourceLooksDefaultTmp = $normalized.IndexOf("\.codex\.tmp\bundled-marketplaces\openai-bundled", [StringComparison]::OrdinalIgnoreCase) -ge 0
+            $report.openaiBundledMarketplace.sourceLooksStableUserCopy = $normalized.IndexOf("\.codex\bundled-marketplaces\openai-bundled", [StringComparison]::OrdinalIgnoreCase) -ge 0
+            continue
+        }
+
+        foreach ($plugin in $targetPlugins) {
+            if ($currentSection -eq "plugins.`"$plugin`"" -and $key -eq "enabled") {
+                $report.bundledPluginConfig[$plugin].enabled = $value
+            }
+        }
+    }
+
+    return $report
+}
+
 $codexHome = Join-Path $env:USERPROFILE ".codex"
 $pluginCacheRoot = Join-Path $codexHome "plugins\cache\openai-bundled"
 $marketplaceRoot = Join-Path $codexHome ".tmp\bundled-marketplaces\openai-bundled"
@@ -579,7 +713,7 @@ $recentLogFiles = Get-RecentLogFiles -Roots $logRoots -Days $LogDays -Limit $Max
 $reconcileEvents = Get-ReconcileEvents -Files $recentLogFiles
 
 $report = [ordered]@{
-    schemaVersion = 2
+    schemaVersion = 3
     generatedAt = (Get-Date).ToString("o")
     safety = @{
         readOnly = $true
@@ -591,6 +725,7 @@ $report = [ordered]@{
         windows = Get-WindowsInfoSafe
         codexAppx = Get-AppxPackageSafe
     }
+    codexConfig = Get-CodexConfigReport $codexHome
     paths = @{
         codexHome = @{
             path = ConvertTo-SafePath $codexHome
@@ -628,6 +763,7 @@ $report = [ordered]@{
         "If reconcileAssessment.status is transient-failure-followed-by-success, the cache may have recovered, but functional validation is still required.",
         "If reconcileAssessment.status is failure-without-later-success, treat the cache as possibly damaged until Chrome or Computer Use validation proves otherwise.",
         "If expectedFileExistsAny is false for Computer Use, the bundled plugin cache may be incomplete.",
+        "If bundledPluginConfig shows a plugin enabled but no callable backend appears, treat it as a runtime exposure problem, not proof that the plugin works.",
         "If Chrome native messaging registry and manifest exist but Browser is not available: extension appears, treat it as a backend exposure problem rather than a simple install problem.",
         "If files exist but the plugin still fails, validate the real Chrome extension backend or Computer Use helper before claiming repair."
     )
