@@ -32,3 +32,8 @@ Useful fields:
 - `logs.reconcileAssessment.status`: tells whether recent bundled plugin reconcile failures were followed by later success.
 - `logs.reconcileAssessment.fileLockEvidence`: flags evidence such as `plugin_cache_windows_file_lock` or `os error 5`.
 - `logs.reconcileTimeline`: bounded sanitized timeline of recent bundled plugin reconcile events.
+
+Performance note:
+
+- Pattern counting reads each scanned log file once and checks all known diagnostic strings during that pass.
+- The helper scans recent Codex Desktop app logs only; it does not scan Codex thread session files.

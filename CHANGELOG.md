@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.9 - 2026-06-22
+
+- Optimize read-only health report log pattern counting so each scanned log file is read once for all known patterns.
+- Preserve the existing diagnostic output shape while reducing repeated log reads on larger Codex Desktop log directories.
+- Keep the helper diagnostic-only; no repair, deletion, config editing, or cache mutation was added.
+
 ## v0.2.8 - 2026-06-17
 
 - Extend the read-only health report with selected non-secret Codex `config.toml` evidence.

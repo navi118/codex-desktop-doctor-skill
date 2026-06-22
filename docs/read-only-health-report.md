@@ -32,6 +32,8 @@ To save a report for an issue:
 - A bounded bundled plugin reconcile timeline.
 - Whether a recent reconcile failure was followed by a later successful reconcile.
 
+The log scan is intentionally bounded by recent files and does not scan Codex thread session files. Pattern counting reads each scanned log file once and checks all known diagnostic strings during that pass, so larger log directories do not multiply work by the number of patterns.
+
 ## What It Avoids
 
 - It does not include full log lines.

@@ -298,40 +298,64 @@ function Get-LogPatternSummary {
         [string[]]$Patterns
     )
 
-    $summary = @()
+    $summaryByPattern = [ordered]@{}
 
     foreach ($pattern in $Patterns) {
-        $count = 0
-        $latest = $null
+        $summaryByPattern[$pattern] = @{
+            pattern = $pattern
+            count = 0
+            latest = $null
+        }
+    }
 
-        foreach ($file in $Files) {
-            try {
-                $matches = @(Select-String -LiteralPath $file.FullName -Pattern $pattern -SimpleMatch -ErrorAction SilentlyContinue)
-            }
-            catch {
-                $matches = @()
-            }
+    foreach ($file in $Files) {
+        $lineNumber = 0
 
-            if ($matches.Count -gt 0) {
-                $count += $matches.Count
-                if ($null -eq $latest -or $file.LastWriteTime -gt $latest.fileLastWriteTime) {
-                    $latest = @{
-                        fileName = $file.Name
-                        fileLastWriteTime = $file.LastWriteTime.ToString("o")
-                        lineNumber = $matches[-1].LineNumber
+        try {
+            foreach ($line in Get-Content -LiteralPath $file.FullName -ErrorAction Stop) {
+                $lineNumber += 1
+
+                foreach ($pattern in $Patterns) {
+                    if ($line.IndexOf($pattern, [StringComparison]::OrdinalIgnoreCase) -lt 0) {
+                        continue
+                    }
+
+                    $entry = $summaryByPattern[$pattern]
+                    $entry.count += 1
+
+                    $shouldUpdateLatest = $false
+                    if ($null -eq $entry.latest) {
+                        $shouldUpdateLatest = $true
+                    }
+                    else {
+                        $previousLastWriteTime = [datetime]::MinValue
+                        if (-not [datetime]::TryParse($entry.latest.fileLastWriteTime, [ref]$previousLastWriteTime)) {
+                            $shouldUpdateLatest = $true
+                        }
+                        elseif ($file.LastWriteTime -gt $previousLastWriteTime) {
+                            $shouldUpdateLatest = $true
+                        }
+                        elseif ($file.LastWriteTime -eq $previousLastWriteTime -and $lineNumber -gt $entry.latest.lineNumber) {
+                            $shouldUpdateLatest = $true
+                        }
+                    }
+
+                    if ($shouldUpdateLatest) {
+                        $entry.latest = @{
+                            fileName = $file.Name
+                            fileLastWriteTime = $file.LastWriteTime.ToString("o")
+                            lineNumber = $lineNumber
+                        }
                     }
                 }
             }
         }
-
-        $summary += @{
-            pattern = $pattern
-            count = $count
-            latest = $latest
+        catch {
+            continue
         }
     }
 
-    return $summary
+    return @($Patterns | ForEach-Object { $summaryByPattern[$_] })
 }
 
 function Get-FieldValue {
