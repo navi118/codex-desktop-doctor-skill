@@ -44,12 +44,12 @@ SKY_CUA_NATIVE_PIPE_DIRECTORY
 ```
 
 Likely meaning:
-- Codex cannot resolve the Computer Use helper executable.
+- Codex cannot resolve the Computer Use client path or native pipe setup.
 - The plugin cache may be missing, partial, or config may point to a path that no longer exists.
-- If helper files exist but `SKY_CUA_NATIVE_PIPE_DIRECTORY` is missing from the active runtime, treat it as a native pipe metadata injection problem rather than simple missing files.
+- If the official client script exists but `SKY_CUA_NATIVE_PIPE_DIRECTORY` is missing from the active runtime, treat it as a native pipe metadata injection problem rather than simple missing files.
 
 Next checks:
-- Confirm the configured helper path exists.
+- Confirm the official `scripts\computer-use-client.mjs` entry point exists.
 - Confirm the Computer Use plugin cache has the expected version directory.
 - Confirm the official Computer Use client can or cannot list apps.
 

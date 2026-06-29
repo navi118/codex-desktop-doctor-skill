@@ -17,7 +17,7 @@ computer-use native pipe startup failed
 Windows Computer Use helper paths are unavailable
 ```
 
-The configured helper executable path may point to a missing file under:
+The Computer Use plugin entry point or native pipe setup may point to missing state under:
 
 ```text
 %USERPROFILE%\.codex\plugins\cache\openai-bundled\computer-use\...
@@ -25,17 +25,17 @@ The configured helper executable path may point to a missing file under:
 
 ## Plain-Language Cause
 
-Computer Use relies on a helper executable and native pipe setup. If the bundled plugin cache is incomplete after an update or failed reconcile, Codex may not be able to find that helper path. This can happen even if the visible first failure was Chrome, because Chrome and Computer Use both live under the bundled plugin cache system.
+Computer Use relies on its bundled client script and native pipe setup. If the bundled plugin cache is incomplete after an update or failed reconcile, Codex may not be able to load the client path or provide the native pipe metadata. This can happen even if the visible first failure was Chrome, because Chrome and Computer Use both live under the bundled plugin cache system.
 
 ## Safe Agent Response
 
 The agent should:
 
-1. Check whether the helper path exists.
+1. Check whether the official Computer Use client script exists.
 2. Check whether the Computer Use plugin cache version directory exists.
 3. Use the official Computer Use client flow to try listing apps.
 4. If `list_apps` works, Computer Use is functionally available.
-5. If helper path is missing and logs support cache damage, propose a default-path cache rebuild with backup and user approval.
+5. If the client script or expected plugin files are missing and logs support cache damage, propose a default-path cache rebuild with backup and user approval.
 6. Validate with the official Computer Use client after repair.
 
 ## What Not To Do

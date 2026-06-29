@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Update the read-only health report for the newer Computer Use plugin layout that uses `scripts\computer-use-client.mjs` instead of checking for an older standalone helper executable path.
+- Bump the health report schema to `4` and include `expectedRelativeFile` in bundled plugin file checks.
+- Document observed Codex Desktop and bundled plugin versions from a sanitized maintainer Windows machine report.
+
 ## v0.2.9 - 2026-06-22
 
 - Optimize read-only health report log pattern counting so each scanned log file is read once for all known patterns.

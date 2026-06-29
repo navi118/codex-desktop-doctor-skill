@@ -47,7 +47,7 @@ The agent should:
 2. Check whether a later `bundled_plugins_reconcile_completed` event exists after the failure.
 3. If a later success exists, classify it as likely recovered but still validate the real surfaces.
 4. Validate Chrome through the actual Codex Chrome extension backend.
-5. Validate Computer Use through the official Computer Use helper.
+5. Validate Computer Use through the official Computer Use client.
 6. Avoid cache repair unless functional validation or missing files show persistent damage.
 
 ## What Not To Do

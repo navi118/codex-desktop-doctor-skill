@@ -48,7 +48,7 @@ Verify the real surface the user asked about.
    - On Windows, running executables and native hosts can keep file handles open.
    - Codex updates may reconcile bundled plugins by backing up, removing, or replacing mutable cache directories.
    - If Chrome or an extension host keeps a file locked during that operation, reconcile can fail with access denied.
-   - A partial bundled plugin state can break Computer Use too, because Computer Use depends on helper files and notification/native pipe setup in the same bundled plugin cache family.
+   - A partial bundled plugin state can break Computer Use too, because Computer Use depends on bundled client files and notification/native pipe setup in the same bundled plugin cache family.
 
 5. Repair only when evidence is strong.
    - Prefer closing Codex and Chrome cleanly, then letting Codex rebuild official plugin state.
