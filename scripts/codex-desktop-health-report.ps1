@@ -734,8 +734,8 @@ $patterns = @(
     "native host manifest invalid"
 )
 
-$recentLogFiles = Get-RecentLogFiles -Roots $logRoots -Days $LogDays -Limit $MaxLogFiles
-$reconcileEvents = Get-ReconcileEvents -Files $recentLogFiles
+$recentLogFiles = @(Get-RecentLogFiles -Roots $logRoots -Days $LogDays -Limit $MaxLogFiles)
+$reconcileEvents = @(Get-ReconcileEvents -Files $recentLogFiles)
 
 $report = [ordered]@{
     schemaVersion = 4
