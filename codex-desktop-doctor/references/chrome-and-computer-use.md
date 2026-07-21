@@ -29,7 +29,7 @@ Start with evidence that does not modify the system:
 
 4. Computer Use-specific checks
    - The Computer Use plugin cache directory exists.
-   - The helper executable path referenced by Codex exists.
+   - The official `scripts\computer-use-client.mjs` entry point exists in the plugin folder.
    - Logs do not show `missing-helper-path`.
    - The official Computer Use client can list apps.
 
@@ -55,14 +55,14 @@ If a later `bundled_plugins_reconcile_completed` event appears after the failure
 
 ## Why Computer Use Can Break At The Same Time
 
-Computer Use depends on bundled plugin files and helper paths. If bundled plugin reconciliation fails on Chrome first, the broader bundled plugin marketplace or cache can be left inconsistent. Computer Use may then fail even though the visible error mentions only its own helper or native pipe.
+Computer Use depends on bundled plugin files, its official client script, and native pipe metadata. If bundled plugin reconciliation fails on Chrome first, the broader bundled plugin marketplace or cache can be left inconsistent. Computer Use may then fail even though the visible error mentions only its own helper or native pipe.
 
 Common chain:
 
 1. Chrome or extension host keeps a bundled plugin cache file locked.
 2. Codex update/startup reconcile fails while backing up or replacing cache entries.
 3. Bundled plugin state becomes partial.
-4. Computer Use cannot find helper paths or start its native pipe.
+4. Computer Use cannot load its client path, receive native pipe metadata, or start its native pipe.
 
 This is why Chrome and Computer Use can fail together after an update.
 
@@ -85,7 +85,7 @@ For Computer Use:
 Avoid:
 - Opening Chrome through shell and calling it a Chrome plugin repair.
 - Launching Windows apps through shell and calling it a Computer Use repair.
-- Importing internal helper packages directly when the skill provides an official client.
+- Importing internal helper packages directly or spawning helper executables when the skill provides an official client.
 
 ## Validation
 

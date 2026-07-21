@@ -28,6 +28,7 @@ Rules:
 
 Useful fields:
 
+- `bundledPlugins.*.expectedRelativeFile`: the diagnostic file checked for that plugin version, such as Chrome's native host executable or Computer Use's official client script.
 - `codexConfig`: selected non-secret `config.toml` marketplace and bundled plugin enabled-state evidence.
 - `logs.reconcileAssessment.status`: tells whether recent bundled plugin reconcile failures were followed by later success.
 - `logs.reconcileAssessment.fileLockEvidence`: flags evidence such as `plugin_cache_windows_file_lock` or `os error 5`.

@@ -100,9 +100,11 @@ For safer issue preparation, this repository includes a read-only PowerShell rep
 .\scripts\codex-desktop-health-report.ps1
 ```
 
-It prints JSON to stdout and does not repair, delete, reinstall, or edit Codex state. It checks Windows/Codex version basics, selected non-secret `config.toml` plugin/marketplace settings, default bundled plugin cache paths, Chrome Native Messaging registry/manifest state, Chrome and Computer Use helper file presence, counts known error patterns in recent Codex Desktop app logs, and summarizes whether bundled plugin reconcile failures were followed by later success.
+It prints JSON to stdout and does not repair, delete, reinstall, or edit Codex state. It checks Windows/Codex version basics, selected non-secret `config.toml` plugin/marketplace settings, default bundled plugin cache paths, Chrome Native Messaging registry/manifest state, Chrome native host and Computer Use client-script presence, counts known error patterns in recent Codex Desktop app logs, and summarizes whether bundled plugin reconcile failures were followed by later success.
 
 See [docs/read-only-health-report.md](docs/read-only-health-report.md).
+
+Observed Windows Codex Desktop builds and bundled plugin path shapes are tracked in [docs/version-observations.md](docs/version-observations.md). Use those observations as diagnostic context, not as hardcoded version requirements.
 
 ## Common Root Causes
 

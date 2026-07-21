@@ -52,7 +52,7 @@ Diagnostic implication:
 Diagnostic implication:
 
 - Do not classify the issue as "plugin not installed" just because Computer Use cannot start.
-- Check whether the helper executable exists, whether the bundled marketplace mirror is complete, and whether the current runtime actually receives native pipe metadata.
+- Check whether the official Computer Use client script and expected plugin files exist, whether the bundled marketplace mirror is complete, and whether the current runtime actually receives native pipe metadata.
 - Avoid treating third-party workaround snippets as project policy. They are useful evidence, but this project should remain diagnostic-first and preserve official Codex default paths unless a repair is explicitly approved.
 
 ## Out Of Scope For Now
@@ -60,4 +60,3 @@ Diagnostic implication:
 `openai/codex#25393` is useful evidence that Codex Desktop UI state can drift from underlying automation state, but it is not a Chrome, Computer Use, bundled plugin cache, or current-thread capability-loading issue.
 
 It should not expand the current project scope unless repeated reports show a safe, repeatable diagnostic path.
-

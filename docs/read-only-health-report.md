@@ -8,7 +8,7 @@ This project includes an optional read-only PowerShell report helper:
 
 The helper prints a JSON report to stdout. It does not repair files, delete caches, reinstall plugins, edit configuration, launch Chrome, or control Windows apps.
 
-Current report schema: `3`.
+Current report schema: `4`.
 
 To save a report for an issue:
 
@@ -26,7 +26,7 @@ To save a report for an issue:
 - Chrome Native Messaging registry and manifest state for `com.openai.codexextension`.
 - Whether the Chrome native host path appears to point into mutable Codex bundled plugin cache locations.
 - Running Chrome extension host process paths when available.
-- Whether expected Chrome and Computer Use helper files exist in versioned plugin folders.
+- Whether the expected Chrome native host and Computer Use client script exist in versioned plugin folders.
 - Process counts for Codex, Chrome, Chrome extension host, and Computer Use helper.
 - Counts of common error strings in recent Codex Desktop app logs.
 - A bounded bundled plugin reconcile timeline.
@@ -105,12 +105,12 @@ If a plugin is enabled in `config.toml` but the current thread still has no call
 
 If `plugin_cache_windows_file_lock`, `os error 5`, or `failed to remove existing plugin cache entry` appears near a Codex update, Chrome or the extension host may have locked a file that Codex tried to replace.
 
-If the Computer Use helper file is missing from all versioned plugin cache folders, the bundled plugin cache may be incomplete.
+If the Computer Use client script is missing from all versioned plugin cache folders, the bundled plugin cache may be incomplete.
 
 If all files exist but the plugin still fails, the next step is functional validation:
 
 - Chrome: confirm the actual Codex Chrome extension backend can list or use tabs.
-- Computer Use: confirm the official Computer Use helper can list Windows apps.
+- Computer Use: confirm the official Computer Use client can list Windows apps through the native pipe.
 
 Do not call the issue fixed from this report alone.
 

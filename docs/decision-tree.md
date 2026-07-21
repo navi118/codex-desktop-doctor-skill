@@ -57,7 +57,7 @@ Check in this order:
 
 1. Is `computer-use@openai-bundled` enabled?
 2. Does the Computer Use cache version directory exist?
-3. Does the configured helper executable path exist?
+3. Does the official `scripts\computer-use-client.mjs` entry point exist in the Computer Use plugin folder?
 4. Do logs mention `missing-helper-path`?
 5. Do logs mention native pipe startup failure?
 6. Can the official Computer Use client list apps?
@@ -94,7 +94,7 @@ Use this mapping:
 | Extension missing or disabled | Ask the user to install or enable the Codex Chrome Extension. |
 | Native host manifest missing or invalid | Ask the user to reinstall the Chrome plugin from Codex plugin UI. |
 | Backend not exposed in current thread but local checks pass | Try a new Codex thread or restart Codex before editing files. |
-| `missing-helper-path` with missing Computer Use cache files | Consider default-path bundled cache repair with backup and approval. |
+| `missing-helper-path` with missing Computer Use client script or plugin files | Consider default-path bundled cache repair with backup and approval. |
 | `plugin_cache_windows_file_lock` after update | Close Chrome and Codex, then repair or let Codex rebuild default cache. |
 | Enabled plugin points to missing or old versioned path | Classify as version drift; rebuild only from official installed Codex source after approval. |
 | Permission or app approval denied | Ask the user to approve app control; do not edit cache. |

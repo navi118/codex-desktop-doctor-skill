@@ -14,7 +14,7 @@ This project should grow from real Codex Desktop failure evidence, not from gues
 
 - Expand the evidence pattern catalog with real sanitized reports.
 - Maintain the read-only health report helper as new safe evidence fields are identified.
-- Add a small version matrix for observed Codex Desktop builds and bundled plugin paths.
+- Maintain the small version matrix for observed Codex Desktop builds and bundled plugin paths.
 - Improve issue templates based on user reports.
 - Add more examples for failed validation and inconclusive diagnosis.
 - Keep the skill itself concise and move detailed material into reference files.

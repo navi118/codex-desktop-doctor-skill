@@ -565,6 +565,7 @@ function Get-PluginVersionReport {
 
     return @{
         versions = $versions
+        expectedRelativeFile = $ExpectedRelativeFile
         expectedFileExistsAny = $expectedFileExistsAny
         expectedFiles = $expectedFiles
     }
@@ -733,11 +734,11 @@ $patterns = @(
     "native host manifest invalid"
 )
 
-$recentLogFiles = Get-RecentLogFiles -Roots $logRoots -Days $LogDays -Limit $MaxLogFiles
-$reconcileEvents = Get-ReconcileEvents -Files $recentLogFiles
+$recentLogFiles = @(Get-RecentLogFiles -Roots $logRoots -Days $LogDays -Limit $MaxLogFiles)
+$reconcileEvents = @(Get-ReconcileEvents -Files $recentLogFiles)
 
 $report = [ordered]@{
-    schemaVersion = 3
+    schemaVersion = 4
     generatedAt = (Get-Date).ToString("o")
     safety = @{
         readOnly = $true
@@ -770,7 +771,7 @@ $report = [ordered]@{
     bundledPlugins = @{
         browser = Get-PluginVersionReport -CacheRoot $pluginCacheRoot -PluginName "browser" -ExpectedRelativeFile ""
         chrome = Get-PluginVersionReport -CacheRoot $pluginCacheRoot -PluginName "chrome" -ExpectedRelativeFile "extension-host\windows\x64\extension-host.exe"
-        computerUse = Get-PluginVersionReport -CacheRoot $pluginCacheRoot -PluginName "computer-use" -ExpectedRelativeFile "node_modules\@oai\sky\bin\windows\codex-computer-use.exe"
+        computerUse = Get-PluginVersionReport -CacheRoot $pluginCacheRoot -PluginName "computer-use" -ExpectedRelativeFile "scripts\computer-use-client.mjs"
     }
     chromeNativeMessaging = Get-ChromeNativeMessagingReport
     processCounts = Get-ProcessCounts
@@ -786,10 +787,10 @@ $report = [ordered]@{
         "If plugin_cache_windows_file_lock, os error 5, or failed to remove existing plugin cache entry appears near a Codex update, Chrome or the extension host may have locked files Codex tried to replace.",
         "If reconcileAssessment.status is transient-failure-followed-by-success, the cache may have recovered, but functional validation is still required.",
         "If reconcileAssessment.status is failure-without-later-success, treat the cache as possibly damaged until Chrome or Computer Use validation proves otherwise.",
-        "If expectedFileExistsAny is false for Computer Use, the bundled plugin cache may be incomplete.",
+        "If expectedFileExistsAny is false for Computer Use, the official computer-use-client.mjs entry point is missing from the bundled plugin cache.",
         "If bundledPluginConfig shows a plugin enabled but no callable backend appears, treat it as a runtime exposure problem, not proof that the plugin works.",
         "If Chrome native messaging registry and manifest exist but Browser is not available: extension appears, treat it as a backend exposure problem rather than a simple install problem.",
-        "If files exist but the plugin still fails, validate the real Chrome extension backend or Computer Use helper before claiming repair."
+        "If files exist but the plugin still fails, validate the real Chrome extension backend or Computer Use client/native pipe before claiming repair."
     )
 }
 
